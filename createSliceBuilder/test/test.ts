@@ -1,118 +1,97 @@
-import type { PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   createAsyncThunk,
   createEntityAdapter,
-  createSlice,
-} from "@reduxjs/toolkit";
+  createSlice
+} from '@reduxjs/toolkit';
 
 export interface Todo {
-  id: string;
-  title: string;
+  id: string
+  title: string
 }
 
-export const todoAdapter = createEntityAdapter<Todo>();
+export const todoAdapter = createEntityAdapter<Todo>()
 
-const todoInitialState = todoAdapter.getInitialState();
+const todoInitialState = todoAdapter.getInitialState()
 
-export type TodoSliceState = typeof todoInitialState;
+export type TodoSliceState = typeof todoInitialState
 
 const fetchCount = (amount = 1) => {
   return new Promise<{ data: number }>((resolve) =>
     setTimeout(() => resolve({ data: amount }), 500)
-  );
-};
+  )
+}
 
 export const incrementAsync = createAsyncThunk(
-  "counter/fetchCount",
+  'counter/fetchCount',
   async (amount: number) => {
-    const response = await fetchCount(amount);
-    return response.data;
-  },
-);
+    const response = await fetchCount(amount)
+    return response.data
+  }
+)
 
-const { addOne } = todoAdapter;
+const { addOne } = todoAdapter
 
 const todoSlice = createSlice({
-  name: "todo",
+  name: 'todo',
   initialState: todoInitialState,
   reducers: {
-    deleteTodo: todoAdapter.removeOne,
+    deleteTodo: todoAdapter.removeOne
   },
-  extraReducers: (builder) => {
-    builder.addCase(incrementAsync.pending, (
+  extraReducers: {
+    [incrementAsync.pending]: (
       state: TodoSliceState,
-      action: PayloadAction<string>,
+      action: PayloadAction<string>
     ) => {
       // stuff
-    });
-    builder.addCase(incrementAsync.rejected, todoAdapter.removeAll);
-    builder.addCase(
-      incrementAsync.fulfilled,
-      (state: TodoSliceState, action: PayloadAction<string>) => {
-        // stuff
-      },
-    );
-    builder.addCase(todoAdded, todoAdapter.addOne);
-    builder.addCase(
-      todoAdded1a,
-      (state: TodoSliceState, action: PayloadAction<string>) => {
-        // stuff
-      },
-    );
-    builder.addCase(
-      todoAdded1b,
-      (state: TodoSliceState, action: PayloadAction<string>) => action.payload,
-    );
-    builder.addCase(
-      todoAdded1c + "test",
-      (state: TodoSliceState, action: PayloadAction<string>) => {
-        // stuff
-      },
-    );
-    builder.addCase(
-      todoAdded1d,
-      (state: TodoSliceState, action: PayloadAction<string>) => {
-        // stuff
-      },
-    );
-    builder.addCase(
-      todoAdded1e,
-      function (state: TodoSliceState, action: PayloadAction<string>) {
-        // stuff
-      },
-    );
-    builder.addCase(
-      todoAdded1f,
-      (state: TodoSliceState, action: PayloadAction<string>) => {
-        //stuff
-      },
-    );
-    builder.addCase(todoAdded1g, addOne);
-    builder.addCase(todoAdded1h, todoAdapter.addOne);
-  },
-});
+    },
+    [incrementAsync.rejected]: todoAdapter.removeAll,
+    [incrementAsync.fulfilled](
+      state: TodoSliceState,
+      action: PayloadAction<string>) {
+      // stuff
+    },
+    todoAdded: todoAdapter.addOne,
 
-export const { deleteTodo } = todoSlice.actions;
+    [todoAdded1a]: (state: TodoSliceState, action: PayloadAction<string>) => {
+      // stuff
+    },
+    [todoAdded1b]: (state: TodoSliceState, action: PayloadAction<string>) => action.payload,
+    [todoAdded1c + 'test']: (state:TodoSliceState, action: PayloadAction<string>) => {
+      // stuff
+    },
+    [todoAdded1d](state: TodoSliceState, action: PayloadAction<string>) {
+      // stuff
+    },
+    [todoAdded1e]: function(state: TodoSliceState, action: PayloadAction<string>) {
+      // stuff
+    },
+    todoAdded1f: (state: TodoSliceState, action: PayloadAction<string>) => {
+      //stuff
+    },
+    [todoAdded1g]: addOne,
+    todoAdded1h: todoAdapter.addOne,
+  }
+})
+
+export const { deleteTodo } = todoSlice.actions
 
 export interface CounterSliceState {
-  value: number;
-  status: "idle" | "loading" | "failed";
+  value: number
+  status: 'idle' | 'loading' | 'failed'
 }
 
 const counterInitialState: CounterSliceState = {
   value: 0,
-  status: "idle",
-};
+  status: 'idle'
+}
 
 const counterSlice = createSlice({
-  name: "counter",
+  name: 'counter',
   initialState: counterInitialState,
-  extraReducers: (builder) => {
-    builder.addCase(
-      deleteTodo,
-      (state: CounterSliceState, action: PayloadAction<string>) => {
-        // stuff
-      },
-    );
-  },
-});
+  extraReducers: {
+    [deleteTodo](state: CounterSliceState, action: PayloadAction<string>) {
+      // stuff
+    }
+  }
+})
