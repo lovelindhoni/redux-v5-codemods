@@ -1,7 +1,7 @@
 import type { Api } from "@codemod.com/workflow";
 
 export async function workflow({ files }: Api) {
-  const context = await files("**/*.{ts,js}").jsFam();
+  const context = await files("**/*.{ts,js,tsx,jsx}").jsFam();
   // Napi Configuration for memoization node matching
   const memoizePatternConfig = {
     rule: {
@@ -94,11 +94,12 @@ export async function workflow({ files }: Api) {
     });
 
   // Second replacement pass for options
-  await context.astGrep(memoizePatternConfig).replace(
-    ({ getNode, getMultipleMatches }) => {
+  await context
+    .astGrep(memoizePatternConfig)
+    .replace(({ getNode, getMultipleMatches }) => {
       const node = getNode();
-      const properties = getMultipleMatches("PROPERTIES").filter((property) =>
-        property.text() !== ","
+      const properties = getMultipleMatches("PROPERTIES").filter(
+        (property) => property.text() !== ",",
       );
 
       const updatedOptions: string[] = [];
@@ -141,10 +142,7 @@ export async function workflow({ files }: Api) {
             const matchedProperty = properties[i]?.find({
               rule: {
                 kind: "property_identifier",
-                any: [
-                  { regex: `^${key}$` },
-                  { regex: `^${key}Options$` },
-                ],
+                any: [{ regex: `^${key}$` }, { regex: `^${key}Options$` }],
               },
             });
             if (matchedProperty) {
@@ -154,9 +152,9 @@ export async function workflow({ files }: Api) {
 
           if (resultEqualityCheckNode) {
             updatedOptions.push(
-              `${key}Options: { resultEqualityCheck: ${
-                resultEqualityCheckNode.getMatch("CHECKFUNC")?.text()
-              } }`,
+              `${key}Options: { resultEqualityCheck: ${resultEqualityCheckNode
+                .getMatch("CHECKFUNC")
+                ?.text()} }`,
             );
           }
         }
@@ -168,6 +166,5 @@ export async function workflow({ files }: Api) {
       const edit = node.replace(`{${newProperties.join(",\n")}}`);
       const updatedNode = node.commitEdits([edit]);
       return updatedNode;
-    },
-  );
+    });
 }

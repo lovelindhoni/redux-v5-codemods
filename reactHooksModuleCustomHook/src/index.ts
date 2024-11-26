@@ -2,35 +2,33 @@ import type { Api } from "@codemod.com/workflow";
 export async function workflow({ files }: Api) {
   await files("**/*.{ts,js}")
     .jsFam()
-    .astGrep(
-      {
-        rule: {
-          pattern: {
-            context: "({ $$$PAIRS })",
-            selector: "object",
-          },
+    .astGrep({
+      rule: {
+        pattern: {
+          context: "({ $$$PAIRS })",
+          selector: "object",
+        },
+        inside: {
+          kind: "arguments",
           inside: {
-            kind: "arguments",
-            inside: {
-              kind: "call_expression",
-              has: {
-                kind: "identifier",
-                regex: "^reactHooksModule$",
-              },
+            kind: "call_expression",
+            has: {
+              kind: "identifier",
+              regex: "^reactHooksModule$",
             },
           },
-          not: {
+        },
+        not: {
+          has: {
+            kind: "pair",
             has: {
-              kind: "pair",
-              has: {
-                kind: "property_identifier",
-                regex: "^hooks$",
-              },
+              kind: "property_identifier",
+              regex: "^hooks$",
             },
           },
         },
       },
-    )
+    })
     .replace(({ getMultipleMatches }) => {
       const pairs = getMultipleMatches("PAIRS")
         .map((pair) => pair.text().trim())

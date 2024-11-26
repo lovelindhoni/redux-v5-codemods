@@ -1,11 +1,10 @@
 import type { Api } from "@codemod.com/workflow";
-
 export async function workflow({ files }: Api) {
-  await files("**/*.{ts,js}")
-    .jsFam()
-    .astGrep({
+  const context = await files("**/*.{js,ts}").jsFam();
+  ["Javascript", "Typescript"].forEach(async (lang) => {
+    await context.astGrep({
       id: "createSliceBuilderCase",
-      language: "Typescript",
+      language: lang,
       rewriters: [
         {
           id: "methods",
@@ -63,10 +62,7 @@ export async function workflow({ files }: Api) {
       transform: {
         EXTRAREDUCERS: {
           rewrite: {
-            rewriters: [
-              "pairs",
-              "methods",
-            ],
+            rewriters: ["pairs", "methods"],
             source: "$$$REDUCERS",
             joinBy: ";\n",
           },
@@ -74,4 +70,5 @@ export async function workflow({ files }: Api) {
       },
       fix: "extraReducers: (builder) => {\n$EXTRAREDUCERS\n}",
     });
+  });
 }
