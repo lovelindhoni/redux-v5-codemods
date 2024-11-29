@@ -2,7 +2,7 @@ import type { Api } from "@codemod.com/workflow";
 
 export async function workflow({ files }: Api) {
   const context = await files("**/*.{ts,js}").jsFam();
-  ["Javascript", "Typescript"].forEach(async (lang) => {
+  for (const lang of ["TypeScript", "Tsx"]) {
     await context.astGrep({
       id: "fix-types",
       language: lang,
@@ -92,5 +92,5 @@ export async function workflow({ files }: Api) {
       },
       fix: "$NEW_IMPORT",
     });
-  });
+  }
 }

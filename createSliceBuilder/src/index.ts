@@ -1,7 +1,7 @@
 import type { Api } from "@codemod.com/workflow";
 export async function workflow({ files }: Api) {
   const context = await files("**/*.{js,ts}").jsFam();
-  ["Javascript", "Typescript"].forEach(async (lang) => {
+  for (const lang of ["Javascript", "Typescript"]) {
     await context.astGrep({
       id: "createSliceBuilderCase",
       language: lang,
@@ -70,5 +70,5 @@ export async function workflow({ files }: Api) {
       },
       fix: "extraReducers: (builder) => {\n$EXTRAREDUCERS\n}",
     });
-  });
+  }
 }
